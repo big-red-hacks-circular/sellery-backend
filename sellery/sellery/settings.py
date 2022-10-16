@@ -130,12 +130,12 @@ WSGI_APPLICATION = "sellery.wsgi.application"
 # [START gaestd_py_django_database_config]
 # Use django-environ to parse the connection string
 DATABASES = {"default": env.db()}
-
+DATABASES["default"]["ENGINE"] ="django.db.backends.sqlite3"
 # If the flag as been set, configure to use proxy
 if os.getenv("USE_CLOUD_SQL_AUTH_PROXY", None):
     DATABASES["default"]["HOST"] = "127.0.0.1"
     DATABASES["default"]["PORT"] = 5431
-
+  
 # [END gaestd_py_django_database_config]
 # [END db_setup]
 

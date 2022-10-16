@@ -5,6 +5,7 @@ from google.cloud import vision
 from collections import Counter
 import base64
 import re
+from google.cloud.vision import types
 
 def detect_web(base64_image):
     """Detects web annotations given an image."""
@@ -17,7 +18,7 @@ def detect_web(base64_image):
     img_byte_arr = io.BytesIO()
     resized_im.save(img_byte_arr, format=im.format)
     content = img_byte_arr.getvalue()
-    image = vision.Image(content=content)
+    image = types.Image(content=content)
 
     threshold_score = 0.5
     threshold_labels = []
@@ -46,7 +47,12 @@ def detect_web(base64_image):
         if entity.score >= threshold_score:
             tmp += entity.description + " "
     tmp = tmp.split()
-    threshold_labels = Counter(tmp).most_common(1)[0][0]
+
+    try: 
+        threshold_labels = Counter(tmp).most_common(1)[0][0]
+    except: 
+        threshold_labels = best_guess_label
+
 
     if len(threshold_labels) == 0:
         threshold_labels = best_guess_label
