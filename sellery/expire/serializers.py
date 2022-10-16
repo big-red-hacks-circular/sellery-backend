@@ -2,7 +2,7 @@ from expire.models import Expire
 from rest_framework import serializers
 
 
-class InterestSerializer(serializers.ModelSerializer):
+class ExpireSerializer(serializers.ModelSerializer):
     class Meta:
         model = Expire
         fields = (

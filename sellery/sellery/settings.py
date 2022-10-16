@@ -23,8 +23,8 @@ from google.cloud import secretmanager
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # [START gaestd_py_django_secret_config]
-env = environ.Env(DEBUG=(bool, False))
-env_file = os.path.join(BASE_DIR, ".env")
+env = environ.Env(DEBUG=(bool, True))
+env_file = os.path.join(BASE_DIR, ".envrc")
 
 if os.path.isfile(env_file):
     # Use a local secret file, if provided
@@ -50,6 +50,9 @@ elif os.environ.get("GOOGLE_CLOUD_PROJECT", None):
     payload = client.access_secret_version(name=name).payload.data.decode("UTF-8")
 
     env.read_env(io.StringIO(payload))
+
+    placeholder = "GOOGLE_APPLICATION_CREDENTIALS=key.json"
+    env.read_env(io.StringIO(placeholder))
 else:
     raise Exception("No local .env or GOOGLE_CLOUD_PROJECT detected. No secrets found.")
 # [END gaestd_py_django_secret_config]
@@ -81,13 +84,15 @@ else:
 # Application definition
 
 INSTALLED_APPS = [
+    "rest_framework",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "expire"
+    "expire",
+    "food",
 ]
 
 MIDDLEWARE = [
@@ -137,6 +142,14 @@ if os.getenv("USE_CLOUD_SQL_AUTH_PROXY", None):
 # Use a in-memory sqlite3 database when testing in CI systems
 # TODO(glasnt) CHECK IF THIS IS REQUIRED because we're setting a val above
 if os.getenv("TRAMPOLINE_CI", None):
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
+        }
+    }
+
+if os.getenv("LOCAL", None):
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
