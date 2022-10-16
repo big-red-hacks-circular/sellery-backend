@@ -157,6 +157,7 @@ if os.getenv("LOCAL", None):
         }
     }
 
+DATA_UPLOAD_MAX_MEMORY_SIZE=5242880
 # Password validation
 
 AUTH_PASSWORD_VALIDATORS = [
